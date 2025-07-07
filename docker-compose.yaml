@@ -1,0 +1,45 @@
+version: '3'
+
+networks:
+  homelab-net:
+    driver: bridge
+    name: homelab-net
+
+services:
+  # MQTT Broker container config
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    ports:
+      - 1885:1883
+      - 9001:9001
+    stdin_open: true 
+    tty: true
+    networks:
+      - homelab-net
+    volumes:
+      - ./mosquitto-volume/config:/mosquitto/config
+      - ./mosquitto-volume/data:/mosquitto/data
+      - ./mosquitto-volume/log:/mosquitto/log
+
+  # Node-RED (flow-based programming tool) config config
+  node-red:
+    image: nodered/node-red:3.1
+    container_name: node-red
+    environment:
+      - TZ=Europe/Paris
+    ports:
+      - 1880:1880   # Accessibility in the browser through "<hostname>:1880"
+    networks:
+      - homelab-net
+    volumes:
+      - ./node-red-data:/data
+
+
+volumes:
+  node-red-data:
+  mosquitto-volume:
+
+
+
+
